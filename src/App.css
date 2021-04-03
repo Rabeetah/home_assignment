@@ -13,7 +13,6 @@
  
 .App-header {
   width: 100%;
-  /* flex: 100%; */
   background-color: #191c21;
   padding: 0em, 2em, 0em, 2em;
   height: fit-content;
@@ -43,11 +42,9 @@
 }
 
 .result-display {
-  /* flex: 100%; */
   padding: 4em;
-  padding-top: 1.5em;
+  padding-top: 2em;
   text-align: start;
-  /* align-self: baseline;   */
 }
 
 p {
@@ -57,7 +54,6 @@ p {
 .gist {
   display: flex;
   align-items: center;
-
 }
 
 .lang-tags {
@@ -78,6 +74,8 @@ p {
 
 .gist-link {
   flex: 100%;
+  cursor: pointer;
+  flex-wrap: wrap;
 }
 
 .avatar-wrap {
@@ -87,10 +85,13 @@ p {
 }
 
 .avatar {
-  /* flex: 30%; */
-  /* text-align: right; */
   margin: -0.5em;
   width: 50px;
   height: 50px;
   border-radius: 50%;
+}
+
+.file-content {
+  font-size: 10sp;
+  white-space: pre-wrap;
 }

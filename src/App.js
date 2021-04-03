@@ -36,7 +36,7 @@ function App() {
         .then((response) => response.json())
         .then((data1) => {
           if (data1.length > 0) {
-            if (data1.length > 3) gist.forks = data1.slice(0,3);
+            if (data1.length > 3) gist.forks = data1.slice(-3);
             else gist.forks = data1;
           }
           else gist.forks = [] 
@@ -66,7 +66,8 @@ function App() {
         if (data !== null) {
           let dcontents = Object.getOwnPropertyNames(data.files);
           dcontents.forEach(c => {
-            allcontents += c + '\n';
+            allcontents += '\n---' + c
+            allcontents += '\n' + data.files[c].content + '\n';
           })
         }
         const dataObject = {url: url, contents: allcontents};
@@ -86,16 +87,17 @@ function App() {
         <button className="search-button" onClick={getGists}>Search</button>
       </header>
       <div className="result-display">
-      <strong>Search results for username: {username}</strong>
-      <br/><br/>
+      
       {
       userData.length > 1 ? 
-      (!userData[0].no_user ?
+      (<>
+      <strong>Search results for username: {username}</strong>
+      <br/><br/>
+        {!userData[0].no_user ?
         userData.map((user) => (
           <>
           <div className="gist">
-          {/* onClick={()=>{displayContent(user.url)}} */}
-            <span className="gist-link" >{user.url}</span>
+            <span className="gist-link" onClick={()=>{displayContent(user.url)}}>{user.url}</span>
             <span className="lang-tags">
             {
             Object.getOwnPropertyNames(user.files).map((file) => (
@@ -110,13 +112,14 @@ function App() {
             </span>
           </div>
           <br/>
-          {/* {fileContent && fileContent.url === user.url ? <span>{fileContent.contents}</span> : ''} */}
+          {fileContent && fileContent.url === user.url ? <span className="file-content">{fileContent.contents}<br/></span> : ''}
           <br/>
           </>
         )) 
       : 
       <p>{userData[0].no_user}</p>
-      )
+      }
+      </>)
       :
        '' } 
       </div>

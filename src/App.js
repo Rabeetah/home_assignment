@@ -4,14 +4,18 @@ import './App.css';
 function App() {
 
   let [username, setUsername] = useState("");
-  let [userData, setUserData] = useState([]);
-  let [fileContent, setFileContent] = useState({});
-  let [disableSearch, setDisableSearch] = useState(false);
+  let [userData, setUserData] = useState([]); //Gists details for the username entered (fetched from api)
+  let [fileContent, setFileContent] = useState({}); //Content of the files of the gist clicked (fetched from api)
+  let [disableSearch, setDisableSearch] = useState(false); //To disable search field and button while waiting for response from api
 
+  //Change function attached to input field
   let onChangeUsername = (e) => {
     setUsername(e.target.value)
   }
 
+  /**This function is called when used clicks the search button.
+  *It gets the response from api and send data to getAvatars method.
+  */
   let getGists =  (e) => {
     setDisableSearch(true);
     fetch(`https://api.github.com/users/${username}/gists`, {
@@ -31,6 +35,8 @@ function App() {
   
   }
 
+  /**This function get avators of latest 3 forks of a gist and concatenate it with the gists data.
+  */
   let getAvatars = (data) => {
     var dataWithForks = []
     if (data && data.length > 0) {
@@ -57,11 +63,13 @@ function App() {
     });
     } 
     else {
-      setUserData([{message:'No user found with that name'}])
+      setUserData([{message:'No gist found with that username'}]) //If no gist found with that username
     }
     setDisableSearch(false);
   }
 
+  /**This method is to get file contents for a specific gist using its url.
+  */
   let displayContent = (url) => {
     let allcontents = ''
     fetch(url, {
@@ -73,7 +81,8 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         if (data !== null) {
-          let dcontents = Object.getOwnPropertyNames(data.files);
+          let dcontents = Object.getOwnPropertyNames(data.files); //getting files names
+          //concatenating all files content
           dcontents.forEach(c => {
             allcontents += '\n---' + c
             allcontents += '\n' + data.files[c].content + '\n';
@@ -94,44 +103,50 @@ function App() {
         placeholder="Enter username"
         disabled={disableSearch}
         onChange={onChangeUsername}/>
-        <button disabled={disableSearch} className="search-button" onClick={getGists}>Search</button>
+        <button disabled={disableSearch} 
+        className="search-button" 
+        onClick={getGists}>
+          Search
+        </button>
       </header>
       <div className="result-display">
-      
       {
-      userData.length > 0 ? 
-      (<>
-      <strong>Search results for username: {username}</strong>
-      <br/><br/>
-        {!userData[0].message ?
-        userData.map((user) => (
-          <>
-          <div className="gist">
-            <span className="gist-link" onClick={()=>{displayContent(user.url)}}>{user.url}</span>
-            <span className="lang-tags">
-            {
-            Object.getOwnPropertyNames(user.files).map((file) => (
-              user.files[file].language ? <span className="tags-badge">{user.files[file].language}</span>: ''
-            ))
+        userData.length > 0 ? 
+        (<>
+          <strong>Search results for username: {username}</strong>
+          <br/><br/>
+            {!userData[0].message ?
+              userData.map((user) => (
+                <>
+                  <div className="gist">
+                    <span className="gist-link" onClick={()=>{displayContent(user.url)}}>{user.url}</span>
+                    <span className="lang-tags">
+                    {
+                      Object.getOwnPropertyNames(user.files).map((file) => (
+                        user.files[file].language ? <span className="tags-badge">{user.files[file].language}</span>: ''
+                      ))
+                    }
+                    </span>
+                    <span className="avatar-wrap">
+                    {
+                      user.forks.map((fork => (
+                        <img src={fork.owner.avatar_url} alt={fork.owner.login} title={fork.owner.login} class="avatar"/>
+                      )))
+                    }
+                    </span>
+                  </div>
+                  <br/>
+                    {fileContent && fileContent.url === user.url ? <span className="file-content">{fileContent.contents}<br/></span> : ''}
+                  <br/>
+                </>
+              )) 
+            : 
+              <p>{userData[0].message}</p>
             }
-            </span>
-            <span className="avatar-wrap">
-            {user.forks.map((fork => (
-              <img src={fork.owner.avatar_url} alt={fork.owner.login} title={fork.owner.login} class="avatar"/>
-            )))}
-            </span>
-          </div>
-          <br/>
-          {fileContent && fileContent.url === user.url ? <span className="file-content">{fileContent.contents}<br/></span> : ''}
-          <br/>
-          </>
-        )) 
-      : 
-      <p>{userData[0].message}</p>
-      }
-      </>)
+        </>)
       :
-       '' } 
+        '' 
+      } 
       </div>
     </div>
   );

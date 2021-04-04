@@ -28,6 +28,7 @@ function App() {
       .then((data)=> {
         if (Array.isArray(data)) getAvatars(data)
         else {
+          data.username = username;
           setUserData([data])
           setDisableSearch(false)
         }
@@ -63,7 +64,7 @@ function App() {
     });
     } 
     else {
-      setUserData([{message:'No gist found with that username'}]) //If no gist found with that username
+      setUserData([{message:'No gist found with that username', username: username}]) //If no gist found with that username
     }
     setDisableSearch(false);
   }
@@ -80,7 +81,7 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data !== null) {
+        if (data !== null && data.files) {
           let dcontents = Object.getOwnPropertyNames(data.files); //getting files names
           //concatenating all files content
           dcontents.forEach(c => {
@@ -89,6 +90,9 @@ function App() {
           })
           const dataObject = {url: url, contents: allcontents};
           setFileContent(dataObject);
+        }
+        else if (data !== null && data.message) {
+          setFileContent({url:url, contents: data.message})
         }
       });
   }
@@ -113,7 +117,7 @@ function App() {
       {
         userData.length > 0 ? 
         (<>
-          <strong>Search results for username: {username}</strong>
+          <strong>Search results for username: {userData[0].username ? userData[0].username : userData[0].owner.login}</strong>
           <br/><br/>
             {!userData[0].message ?
               userData.map((user) => (
@@ -123,7 +127,7 @@ function App() {
                     <span className="lang-tags">
                     {
                       Object.getOwnPropertyNames(user.files).map((file) => (
-                        user.files[file].language ? <span className="tags-badge">{user.files[file].language}</span>: ''
+                        user.files[file].language ? <span className="tags-badge">{user.files[file].language}</span>: <span className="tags-badge">None</span>
                       ))
                     }
                     </span>

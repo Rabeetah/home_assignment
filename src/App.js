@@ -6,12 +6,14 @@ function App() {
   let [username, setUsername] = useState("");
   let [userData, setUserData] = useState([]);
   let [fileContent, setFileContent] = useState({});
+  let [disableSearch, setDisableSearch] = useState(false);
 
   let onChangeUsername = (e) => {
     setUsername(e.target.value)
   }
 
   let getGists =  (e) => {
+    setDisableSearch(true);
     fetch(`https://api.github.com/users/${username}/gists`, {
       method: "GET",
       headers: {
@@ -19,7 +21,13 @@ function App() {
       },
     })
       .then((response) => response.json())
-      .then((data)=>getAvatars(data));
+      .then((data)=> {
+        if (Array.isArray(data)) getAvatars(data)
+        else {
+          setUserData([data])
+          setDisableSearch(false)
+        }
+      });
   
   }
 
@@ -45,12 +53,13 @@ function App() {
             console.log(dataWithForks)
             setUserData(dataWithForks);
           }
-        });
+        })
     });
     } 
     else {
-      setUserData([{no_user:'No user found with that name'}])
+      setUserData([{message:'No user found with that name'}])
     }
+    setDisableSearch(false);
   }
 
   let displayContent = (url) => {
@@ -83,17 +92,18 @@ function App() {
         className="search"
         type="text" 
         placeholder="Enter username"
+        disabled={disableSearch}
         onChange={onChangeUsername}/>
-        <button className="search-button" onClick={getGists}>Search</button>
+        <button disabled={disableSearch} className="search-button" onClick={getGists}>Search</button>
       </header>
       <div className="result-display">
       
       {
-      userData.length > 1 ? 
+      userData.length > 0 ? 
       (<>
       <strong>Search results for username: {username}</strong>
       <br/><br/>
-        {!userData[0].no_user ?
+        {!userData[0].message ?
         userData.map((user) => (
           <>
           <div className="gist">
@@ -117,7 +127,7 @@ function App() {
           </>
         )) 
       : 
-      <p>{userData[0].no_user}</p>
+      <p>{userData[0].message}</p>
       }
       </>)
       :

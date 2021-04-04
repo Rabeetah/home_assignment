@@ -41,6 +41,11 @@
   border-radius: 2%;
 }
 
+input[type="text"][disabled] {
+  color: rgb(51, 49, 49);
+  background-color: #abb0bd;
+}
+
 .result-display {
   padding: 4em;
   padding-top: 2em;
@@ -73,6 +78,8 @@ p {
 }
 
 .gist-link {
+  text-decoration: underline;
+  text-decoration-color: turquoise;
   flex: 100%;
   cursor: pointer;
   flex-wrap: wrap;
@@ -92,6 +99,6 @@ p {
 }
 
 .file-content {
-  font-size: 10sp;
+  font-size: small;
   white-space: pre-wrap;
 }

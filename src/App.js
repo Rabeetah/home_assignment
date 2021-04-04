@@ -78,9 +78,9 @@ function App() {
             allcontents += '\n---' + c
             allcontents += '\n' + data.files[c].content + '\n';
           })
+          const dataObject = {url: url, contents: allcontents};
+          setFileContent(dataObject);
         }
-        const dataObject = {url: url, contents: allcontents};
-        setFileContent(dataObject);
       });
   }
 
